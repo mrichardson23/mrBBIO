@@ -7,7 +7,8 @@ OUTPUT = "OUTPUT"
 INPUT = "INPUT"
 pinList = [] # needed for unexport()
 startTime = time.time() # needed for millis()
-pinDef = {	"P8.3":		38,
+digitalPinDef = {	
+			"P8.3":		38,
 			"P8.4":		39,
 			"P8.5":		34,
 			"P8.6":		35,
@@ -44,29 +45,38 @@ pinDef = {	"P8.3":		38,
 			"P9.27":	115,
 			"P9.42":	7}
 
+analogPinDef = {
+			"P9.33":	"ain4",
+			"P9.35":	"ain6",
+			"P9.36":	"ain5",
+			"P9.37":	"ain2",
+			"P9.38":	"ain3",
+			"P9.39":	"ain0",
+			"P9.40":	"ain1"}
+
 def pinMode(pin, direction):
 	"""pinMode(pin, direction) opens (exports)  a pin for use and 
 	sets the direction"""
-	if pin in pinDef:
+	if pin in digitalPinDef:
 		fw = file("/sys/class/gpio/export", "w")
-		fw.write("%d" % (pinDef[pin]))
+		fw.write("%d" % (digitalPinDef[pin]))
 		fw.close()
-		fileName = "/sys/class/gpio/gpio%d/direction" % (pinDef[pin])
+		fileName = "/sys/class/gpio/gpio%d/direction" % (digitalPinDef[pin])
 		fw = file(fileName, "w")
 		if direction == "INPUT":
 			fw.write("in")
 		else:
 			fw.write("out")
 		fw.close()
-		pinList.append(pinDef[pin])
+		pinList.append(digitalPinDef[pin])
 	else:
 		print "pinMode error: Pin " + pin + " is not defined as a digital I/O pin in the pin definition."
 
 
 def digitalWrite(pin, status):
 	"""digitalWrite(pin, status) sets a pin HIGH or LOW"""
-	if pin in pinDef:
-		fileName = "/sys/class/gpio/gpio%d/value" % (pinDef[pin])
+	if pin in digitalPinDef:
+		fileName = "/sys/class/gpio/gpio%d/value" % (digitalPinDef[pin])
 		fw = file(fileName, "w")
 		if status == "HIGH":
 			fw.write("1")
@@ -78,16 +88,28 @@ def digitalWrite(pin, status):
 	
 def digitalRead(pin):
 	"""digitalRead(pin) returns HIGH or LOW for a given pin."""
-	if pin in pinDef:
-		fileName = "/sys/class/gpio/gpio%d/value" % (pinDef[pin])
+	if pin in digitalPinDef:
+		fileName = "/sys/class/gpio/gpio%d/value" % (digitalPinDef[pin])
 		fw = file(fileName, "r")
 		inData = fw.read()
+		fw.close()
 		if inData == "0\n":
 			return LOW
 		if inData == "1\n":
 			return HIGH
 	else:
 		print "digitalRead error: Pin " + pin + " is not defined as a digital I/O pin in the pin definition."
+		return -1;
+
+def analogRead(pin):
+	"""analogRead(pin) returns analog value for a given pin."""
+	if pin in analogPinDef:
+		fileName = "/sys/devices/platform/tsc/" + (analogPinDef[pin])
+		fw = file(fileName, "r")
+		return fw.read()
+		fw.close()
+	else:
+		print "analogRead error: Pin " + pin + " is not defined as an analog in pin in the pin definition."
 		return -1;
 	
 def pinUnexport(pin):
@@ -98,7 +120,7 @@ def pinUnexport(pin):
 	fw.close()
 
 def cleanup():
-"""	takes care of stepping through pins that were set with
+	"""	takes care of stepping through pins that were set with
 	pinMode and unExports them. Prints result"""
 	def find_key(dic, val):
 		return [k for k, v in dic.iteritems() if v == val][0]
@@ -106,7 +128,7 @@ def cleanup():
 	print "Cleaning up. Unexporting the following pins:",
 	for pin in pinList:
 		pinUnexport(pin)
-		print find_key(pinDef, pin),
+		print find_key(digitalPinDef, pin),
 
 def delay(millis):
 	"""delay(millis) sleeps the script for a given number of 

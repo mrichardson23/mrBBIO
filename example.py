@@ -23,5 +23,6 @@ def loop():
 		digitalWrite("P8.16", LOW)
 		digitalWrite("P8.18", LOW)
 		digitalWrite("P8.20", LOW)
+		print "analog reading:" + analogRead("P9.33")
 	delay(10) # don't peg the processor checking pin	
 run(setup, loop)
