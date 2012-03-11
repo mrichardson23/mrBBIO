@@ -1,0 +1,7 @@
+mrBBIO
+
+A Python module for using Arduino-like language to control IO pins on 
+the BeagleBone.
+
+Some code based on PyBBIO by Alexander Hiam: 
+https://github.com/alexanderhiam/PyBBIO
