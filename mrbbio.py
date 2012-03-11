@@ -5,6 +5,7 @@ LOW = "LOW"
 OUTPUT = "OUTPUT"
 INPUT = "INPUT"
 pinList = []
+startTime = time.time()
 
 def pinMode(pin, direction):
 	fw = file("/sys/class/gpio/export", "w")
@@ -49,6 +50,10 @@ def cleanup():
 
 def delay(millis):
 	time.sleep(millis/1000)
+
+def millis():
+	return int((time.time() - startTime) * 1000)
+
 
 def run(setup, main): # from PyBBIO by Alexander Hiam - ahiam@marlboro.edu - www.alexanderhiam.com https://github.com/alexanderhiam/PyBBIO
   """ The main loop; must be passed a setup and a main function.

@@ -11,5 +11,6 @@ def loop():
 	delay(1000)
 	digitalWrite(44, LOW)
 	delay(1000)
-
+	print millis()
+	
 run(setup, loop)
