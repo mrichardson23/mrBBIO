@@ -1,13 +1,17 @@
+"""Arduino-like library for Python on BeagleBone"""
+
 import time
 
 HIGH = "HIGH"
 LOW = "LOW"
 OUTPUT = "OUTPUT"
 INPUT = "INPUT"
-pinList = []
-startTime = time.time()
+pinList = [] # needed for unexport()
+startTime = time.time() # needed for millis()
 
 def pinMode(pin, direction):
+	"""pinMode(pin, direction) opens (exports)  a pin for use and 
+	sets the direction"""
 	fw = file("/sys/class/gpio/export", "w")
 	fw.write("%d" % (pin))
 	fw.close()
@@ -22,6 +26,7 @@ def pinMode(pin, direction):
 
 
 def digitalWrite(pin, status):
+	"""digitalWrite(pin, status) sets a pin HIGH or LOW"""
 	fileName = "/sys/class/gpio/gpio%d/value" % (pin)
 	fw = file(fileName, "w")
 	if status == "HIGH":
@@ -31,6 +36,7 @@ def digitalWrite(pin, status):
 	fw.close()
 	
 def digitalRead(pin):
+	"""digitalRead(pin) returns HIGH or LOW for a given pin."""
 	fileName = "/sys/class/gpio/gpio%d/value" % (pin)
 	fw = file(fileName, "r")
 	inData = fw.read()
@@ -40,6 +46,8 @@ def digitalRead(pin):
 		return HIGH	
 	
 def pinUnexport(pin):
+	"""pinUnexport(pin) closes a pin in sysfs. This is susally 
+	called by cleanup() when a script is exiting."""
 	fw = file("/sys/class/gpio/unexport", "w")
 	fw.write("%d" % (pin))
 	fw.close()
@@ -49,9 +57,13 @@ def cleanup():
 		pinUnexport(pin)
 
 def delay(millis):
+	"""delay(millis) sleeps the script for a given number of 
+	milliseconds"""
 	time.sleep(millis/1000)
 
 def millis():
+	"""millis() returns an int for the number of milliseconds since 
+	the script started."""
 	return int((time.time() - startTime) * 1000)
 
 
