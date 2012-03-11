@@ -9,41 +9,82 @@ INPUT = "INPUT"
 pinList = [] # needed for unexport()
 startTime = time.time() # needed for millis()
 
+pinDef = {	"P8.3":		38,
+			"P8.4":		39,
+			"P8.5":		34,
+			"P8.6":		35,
+			"P8.11":	45,
+			"P8.12":	44,
+			"P8.14":	26,
+			"P8.15":	47,
+			"P8.16":	46,
+			"P8.17":	27,
+			"P8.18":	65,
+			"P8.20":	63,
+			"P8.21":	62,
+			"P8.22":	37,
+			"P8.23":	36,
+			"P8.24":	33,
+			"P8.25":	32,
+			"P8.26":	61,
+			"P8.27":	86,
+			"P8.28":	88,
+			"P8.29":	87,
+			"P8.30":	89,
+			"P8.39":	76,
+			"P8.40":	77,
+			"P8.41":	74,
+			"P8.42":	75,
+			"P8.43":	72,
+			"P8.44":	73,
+			"P8.45":	70,
+			"P8.46":	71}
+
 def pinMode(pin, direction):
 	"""pinMode(pin, direction) opens (exports)  a pin for use and 
 	sets the direction"""
-	fw = file("/sys/class/gpio/export", "w")
-	fw.write("%d" % (pin))
-	fw.close()
-	fileName = "/sys/class/gpio/gpio%d/direction" % (pin)
-	fw = file(fileName, "w")
-	if direction == "INPUT":
-		fw.write("in")
+	if pin in pinDef:
+		fw = file("/sys/class/gpio/export", "w")
+		fw.write("%d" % (pinDef[pin]))
+		fw.close()
+		fileName = "/sys/class/gpio/gpio%d/direction" % (pinDef[pin])
+		fw = file(fileName, "w")
+		if direction == "INPUT":
+			fw.write("in")
+		else:
+			fw.write("out")
+		fw.close()
+		pinList.append(pinDef[pin])
 	else:
-		fw.write("out")
-	fw.close()
-	pinList.append(pin)
+		print "pinMode error: Pin " + pin + " is not defined as a digital I/O pin in the pin definition."
 
 
 def digitalWrite(pin, status):
 	"""digitalWrite(pin, status) sets a pin HIGH or LOW"""
-	fileName = "/sys/class/gpio/gpio%d/value" % (pin)
-	fw = file(fileName, "w")
-	if status == "HIGH":
-		fw.write("1")
-	if status == "LOW":
-		fw.write("0")
-	fw.close()
+	if pin in pinDef:
+		fileName = "/sys/class/gpio/gpio%d/value" % (pinDef[pin])
+		fw = file(fileName, "w")
+		if status == "HIGH":
+			fw.write("1")
+		if status == "LOW":
+			fw.write("0")
+		fw.close()
+	else:
+		print "digitalWrite error: Pin " + pin + " is not defined as a digital I/O pin in the pin definition."
 	
 def digitalRead(pin):
 	"""digitalRead(pin) returns HIGH or LOW for a given pin."""
-	fileName = "/sys/class/gpio/gpio%d/value" % (pin)
-	fw = file(fileName, "r")
-	inData = fw.read()
-	if inData == "0\n":
-		return LOW
-	if inData == "1\n":
-		return HIGH	
+	if pin in pinDef:
+		fileName = "/sys/class/gpio/gpio%d/value" % (pinDef[pin])
+		fw = file(fileName, "r")
+		inData = fw.read()
+		if inData == "0\n":
+			return LOW
+		if inData == "1\n":
+			return HIGH
+	else:
+		print "digitalRead error: Pin " + pin + " is not defined as a digital I/O pin in the pin definition."
+		return -1;
 	
 def pinUnexport(pin):
 	"""pinUnexport(pin) closes a pin in sysfs. This is susally 
