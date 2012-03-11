@@ -1,5 +1,4 @@
 """Arduino-like library for Python on BeagleBone"""
-
 import time
 
 HIGH = "HIGH"
@@ -8,7 +7,6 @@ OUTPUT = "OUTPUT"
 INPUT = "INPUT"
 pinList = [] # needed for unexport()
 startTime = time.time() # needed for millis()
-
 pinDef = {	"P8.3":		38,
 			"P8.4":		39,
 			"P8.5":		34,
@@ -100,6 +98,8 @@ def pinUnexport(pin):
 	fw.close()
 
 def cleanup():
+"""	takes care of stepping through pins that were set with
+	pinMode and unExports them. Prints result"""
 	def find_key(dic, val):
 		return [k for k, v in dic.iteritems() if v == val][0]
 	print ""
@@ -107,8 +107,6 @@ def cleanup():
 	for pin in pinList:
 		pinUnexport(pin)
 		print find_key(pinDef, pin),
-
-
 
 def delay(millis):
 	"""delay(millis) sleeps the script for a given number of 
@@ -120,21 +118,20 @@ def millis():
 	the script started."""
 	return int((time.time() - startTime) * 1000)
 
-
 def run(setup, main): # from PyBBIO by Alexander Hiam - ahiam@marlboro.edu - www.alexanderhiam.com https://github.com/alexanderhiam/PyBBIO
-  """ The main loop; must be passed a setup and a main function.
-      First the setup function will be called once, then the main
-      function wil be continuously until a stop signal is raised, 
-      e.g. CTRL-C or a call to the stop() function from within the
-      main function. """
-  try:
-    setup()
-    while (True):
-      main()
-  except KeyboardInterrupt:
+	""" The main loop; must be passed a setup and a main function.
+	First the setup function will be called once, then the main
+	function wil be continuously until a stop signal is raised, 
+	e.g. CTRL-C or a call to the stop() function from within the
+	main function. """
+	try:
+		setup()
+		while (True):
+			main()
+	except KeyboardInterrupt:
     # Manual exit signal, clean up and exit happy
-    cleanup()
-  except Exception, e:
+		cleanup()
+	except Exception, e:
     # Something may have gone wrong, clean up and print exception
-    cleanup()
-    print e
+		cleanup()
+		print e
