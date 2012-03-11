@@ -38,7 +38,13 @@ pinDef = {	"P8.3":		38,
 			"P8.43":	72,
 			"P8.44":	73,
 			"P8.45":	70,
-			"P8.46":	71}
+			"P8.46":	71,
+			"P9.12":	60,
+			"P9.15":	48,
+			"P9.23":	49,
+			"P9.25":	117,
+			"P9.27":	115,
+			"P9.42":	7}
 
 def pinMode(pin, direction):
 	"""pinMode(pin, direction) opens (exports)  a pin for use and 
