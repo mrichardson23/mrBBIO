@@ -23,6 +23,5 @@ def loop():
 		digitalWrite("P8.16", LOW)
 		digitalWrite("P8.18", LOW)
 		digitalWrite("P8.20", LOW)
-		delay(1000)
-	
+	delay(10) # don't peg the processor checking pin	
 run(setup, loop)

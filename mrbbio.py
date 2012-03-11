@@ -100,8 +100,15 @@ def pinUnexport(pin):
 	fw.close()
 
 def cleanup():
+	def find_key(dic, val):
+		return [k for k, v in dic.iteritems() if v == val][0]
+	print ""
+	print "Cleaning up. Unexporting the following pins:",
 	for pin in pinList:
 		pinUnexport(pin)
+		print find_key(pinDef, pin),
+
+
 
 def delay(millis):
 	"""delay(millis) sleeps the script for a given number of 
