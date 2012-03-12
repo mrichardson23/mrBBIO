@@ -1,7 +1,8 @@
 mrBBIO
 
-A Python module for using Arduino-like language to control IO pins on 
-the BeagleBone.
+mrBBIO is a Python module for using Arduino-like language to control IO 
+pins on the BeagleBone. Lots of work still to be done, see "Issues" tab
+on Github for list of features to be implemented.
 
 Some code based on PyBBIO by Alexander Hiam: 
 https://github.com/alexanderhiam/PyBBIO
