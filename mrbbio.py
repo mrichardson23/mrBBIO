@@ -63,7 +63,7 @@ def pinMode(pin, direction):
 		fw.close()
 		fileName = "/sys/class/gpio/gpio%d/direction" % (digitalPinDef[pin])
 		fw = file(fileName, "w")
-		if direction == "INPUT":
+		if direction == INPUT:
 			fw.write("in")
 		else:
 			fw.write("out")
@@ -78,9 +78,9 @@ def digitalWrite(pin, status):
 	if pin in digitalPinDef:
 		fileName = "/sys/class/gpio/gpio%d/value" % (digitalPinDef[pin])
 		fw = file(fileName, "w")
-		if status == "HIGH":
+		if status == HIGH:
 			fw.write("1")
-		if status == "LOW":
+		if status == LOW:
 			fw.write("0")
 		fw.close()
 	else:
