@@ -133,7 +133,7 @@ def cleanup():
 def delay(millis):
 	"""delay(millis) sleeps the script for a given number of 
 	milliseconds"""
-	time.sleep(millis/1000)
+	time.sleep(millis/1000.0)
 
 def millis():
 	"""millis() returns an int for the number of milliseconds since 
