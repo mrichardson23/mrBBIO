@@ -106,8 +106,9 @@ def analogRead(pin):
 	if pin in analogPinDef:
 		fileName = "/sys/devices/platform/tsc/" + (analogPinDef[pin])
 		fw = file(fileName, "r")
-		return fw.read()
+		data = fw.read()
 		fw.close()
+		return data
 	else:
 		print "analogRead error: Pin " + pin + " is not defined as an analog in pin in the pin definition."
 		return -1;
