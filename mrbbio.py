@@ -12,6 +12,7 @@ digitalPinDef = {
 			"P8.4":		39,
 			"P8.5":		34,
 			"P8.6":		35,
+			"P8.7":		66,
 			"P8.11":	45,
 			"P8.12":	44,
 			"P8.14":	26,
@@ -45,6 +46,45 @@ digitalPinDef = {
 			"P9.27":	115,
 			"P9.42":	7}
 
+pinMuxDef = {
+			"P8.3":		"gpmc_ad6",
+			"P8.4":		"gpmc_ad7",
+			"P8.5":		"gpmc_ad2",
+			"P8.6":		"gpmc_ad3",
+			"P8.7":		"gpmc_advn_ale",
+			"P8.11":	"gpmc_ad13",
+			"P8.12":	"gpmc_ad12",
+			"P8.14":	"gpmc_ad10",
+			"P8.15":	"gpmc_ad15",
+			"P8.16":	"gpmc_ad14",
+			"P8.17":	"gpmc_ad11",
+			"P8.18":	"gpmc_clk",
+			"P8.20":	"gpmc_csn2",
+			"P8.21":	"gpmc_csn1",
+			"P8.22":	"gpmc_ad5",
+			"P8.23":	"gpmc_ad4",
+			"P8.24":	"gpmc_ad1",
+			"P8.25":	"gpmc_ad0",
+			"P8.26":	"gpmc_csn0",
+			"P8.27":	"lcd_vsync",
+			"P8.28":	"lcd_pclk",
+			"P8.29":	"lcd_hsync",
+			"P8.30":	"lcd_ac_bias_en",
+			"P8.39":	"lcd_data6",
+			"P8.40":	"lcd_data7",
+			"P8.41":	"lcd_data4",
+			"P8.42":	"lcd_data5",
+			"P8.43":	"lcd_data2",
+			"P8.44":	"lcd_data3",
+			"P8.45":	"lcd_data0",
+			"P8.46":	"lcd_data1",
+			"P9.12":	"gpmc_ben1",
+			"P9.15":	"gpmc_a0",
+			"P9.23":	"gpmc_a1",
+			"P9.25":	"mcasp0_ahclkx",
+			"P9.27":	"mcasp0_fsr",
+			"P9.42":	"ecap0_in_pwm0_out"}
+
 analogPinDef = {
 			"P9.33":	"ain4",
 			"P9.35":	"ain6",
@@ -58,6 +98,9 @@ def pinMode(pin, direction):
 	"""pinMode(pin, direction) opens (exports)  a pin for use and 
 	sets the direction"""
 	if pin in digitalPinDef:
+		muxfile = file("/sys/kernel/debug/omap_mux/" + pinMuxDef[pin], "w")
+		muxfile.write("7")
+		muxfile.close
 		fw = file("/sys/class/gpio/export", "w")
 		fw.write("%d" % (digitalPinDef[pin]))
 		fw.close()
