@@ -7,7 +7,7 @@ OUTPUT = "OUTPUT"
 INPUT = "INPUT"
 pinList = [] # needed for unexport()
 startTime = time.time() # needed for millis()
-digitalPinDef = {	
+digitalPinDef = {
 			"P8.3":		38,
 			"P8.4":		39,
 			"P8.5":		34,
@@ -155,56 +155,56 @@ analogPinDef = {
 			"P9.40":	"ain1"}
 
 def pinMode(pin, direction):
-	"""pinMode(pin, direction) opens (exports)  a pin for use and 
+	"""pinMode(pin, direction) opens (exports) a pin for use, sets the pinmux, and 
 	sets the direction"""
-	if pin in digitalPinDef:
-		muxfile = file("/sys/kernel/debug/omap_mux/" + pinMuxDef[pin], "w")
-		muxfile.write("7")
+	if pin in digitalPinDef: # if we know how to refer to the pin:
+		muxfile = file("/sys/kernel/debug/omap_mux/" + pinMuxDef[pin], "w") # open its mux file
+		muxfile.write("7") # put it into mode 7
 		muxfile.close
 		fw = file("/sys/class/gpio/export", "w")
-		fw.write("%d" % (digitalPinDef[pin]))
+		fw.write("%d" % (digitalPinDef[pin])) # write the pin to export to userspace
 		fw.close()
-		fileName = "/sys/class/gpio/gpio%d/direction" % (digitalPinDef[pin])
+		fileName = "/sys/class/gpio/gpio%d/direction" % (digitalPinDef[pin]) 
 		fw = file(fileName, "w")
-		if direction == INPUT:
-			fw.write("in")
+		if direction == INPUT: 
+			fw.write("in") # write the diretion
 		else:
-			fw.write("out")
+			fw.write("out") # write the diretion
 		fw.close()
-		pinList.append(digitalPinDef[pin])
-	else:
+		pinList.append(digitalPinDef[pin]) # Keep a list of exported pins so that we can unexport them.
+	else: #if we don't know how to refer to a pin:
 		print "pinMode error: Pin " + pin + " is not defined as a digital I/O pin in the pin definition."
 
 
 def digitalWrite(pin, status):
 	"""digitalWrite(pin, status) sets a pin HIGH or LOW"""
-	if pin in digitalPinDef:
+	if digitalPinDef[pin] in pinList: # check if we exported the pin in pinMode
 		fileName = "/sys/class/gpio/gpio%d/value" % (digitalPinDef[pin])
-		fw = file(fileName, "w")
+		fw = file(fileName, "w") # open the pin's value file for writing
 		if status == HIGH:
-			fw.write("1")
+			fw.write("1") # Set the pin HIGH by writing 1 to its value file
 		if status == LOW:
-			fw.write("0")
+			fw.write("0") # Set the pin LOW by writing 0 to its value file
 		fw.close()
-	else:
-		print "digitalWrite error: Pin " + pin + " is not defined as a digital I/O pin in the pin definition."
+	else: # if we haven't exported the pin, print an error:
+		print "digitalWrite error: Pin mode for " + pin + " has not been set. Use pinMode(pin, INPUT) first."
 	
 def digitalRead(pin):
 	"""digitalRead(pin) returns HIGH or LOW for a given pin."""
-	if pin in digitalPinDef:
+	if digitalPinDef[pin] in pinList: # check if we exported the pin in pinMode
 		fileName = "/sys/class/gpio/gpio%d/value" % (digitalPinDef[pin])
-		fw = file(fileName, "r")
+		fw = file(fileName, "r") # open the pin's value file for reading
 		inData = fw.read()
 		fw.close()
-		if inData == "0\n":
+		if inData == "0\n": # a 0 means it's low
 			return LOW
-		if inData == "1\n":
+		if inData == "1\n": # a 1 means it's high
 			return HIGH
-	else:
-		print "digitalRead error: Pin " + pin + " is not defined as a digital I/O pin in the pin definition."
+	else: # if we haven't exported the pin, print an error (not working for some reason):
+		print "digitalRead error: Pin mode for " + pin + " has not been set. Use pinMode(pin, OUTPUT) first."
 		return -1;
 
-def analogRead(pin):
+def analogRead(pin): #under construction!
 	"""analogRead(pin) returns analog value for a given pin."""
 	if pin in analogPinDef:
 		fileName = "/sys/devices/platform/tsc/" + (analogPinDef[pin])
@@ -216,7 +216,7 @@ def analogRead(pin):
 		print "analogRead error: Pin " + pin + " is not defined as an analog in pin in the pin definition."
 		return -1;
 	
-def pinUnexport(pin):
+def pinUnexport(pin): # helper function for cleanup()
 	"""pinUnexport(pin) closes a pin in sysfs. This is susally 
 	called by cleanup() when a script is exiting."""
 	fw = file("/sys/class/gpio/unexport", "w")
@@ -227,12 +227,12 @@ def cleanup():
 	"""	takes care of stepping through pins that were set with
 	pinMode and unExports them. Prints result"""
 	def find_key(dic, val):
-		return [k for k, v in dic.iteritems() if v == val][0]
+		return [k for k, v in dic.iteritems() if v == val][0] # helper function for getting friendly name of pin
 	print ""
 	print "Cleaning up. Unexporting the following pins:",
-	for pin in pinList:
-		pinUnexport(pin)
-		print find_key(digitalPinDef, pin),
+	for pin in pinList: # for each pin we exported... 
+		pinUnexport(pin) # ...unexport it...
+		print find_key(digitalPinDef, pin), #...and print the friendly name of the pin
 
 def delay(millis):
 	"""delay(millis) sleeps the script for a given number of 
