@@ -158,9 +158,6 @@ def pinMode(pin, direction):
 	"""pinMode(pin, direction) opens (exports) a pin for use, sets the pinmux, and 
 	sets the direction"""
 	if pin in digitalPinDef: # if we know how to refer to the pin:
-		muxfile = file("/sys/kernel/debug/omap_mux/" + pinMuxDef[pin], "w") # open its mux file
-		muxfile.write("7") # put it into mode 7
-		muxfile.close
 		fw = file("/sys/class/gpio/export", "w")
 		fw.write("%d" % (digitalPinDef[pin])) # write the pin to export to userspace
 		fw.close()
@@ -168,8 +165,14 @@ def pinMode(pin, direction):
 		fw = file(fileName, "w")
 		if direction == INPUT: 
 			fw.write("in") # write the diretion
+			muxfile = file("/sys/kernel/debug/omap_mux/" + pinMuxDef[pin], "w") # open its mux file
+			muxfile.write("2F") # put it into mode 7 input, no pulldown
+			muxfile.close
 		else:
 			fw.write("out") # write the diretion
+			muxfile = file("/sys/kernel/debug/omap_mux/" + pinMuxDef[pin], "w") # open its mux file
+			muxfile.write("7") # put it into mode 7 output)
+			muxfile.close
 		fw.close()
 		pinList.append(digitalPinDef[pin]) # Keep a list of exported pins so that we can unexport them.
 	else: #if we don't know how to refer to a pin:
